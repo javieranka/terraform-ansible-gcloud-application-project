@@ -1,0 +1,71 @@
+---
+- name: Setup Backend server for VamosCloudAPI
+  hosts: backend
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Python 3, pip, and MySQL/MariaDB client libraries
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - mariadb-client
+          - libmariadb-dev
+          - python3-pymysql
+        state: present
+
+    - name: Install Flask and SQLAlchemy via pip
+      pip:
+        name:
+          - flask
+          - flask_sqlalchemy
+        state: present
+
+    - name: Ensure /home/kulka/frontend exists
+      file:
+        path: /home/kulka/frontend
+        state: directory
+        owner: kulka
+        group: kulka
+        mode: 0755
+
+    - name: Copy backend app
+      copy:
+        src: /home/git/kulka/backend
+        dest: /home/kulka/backend/
+        owner: kulka
+        group: kulka
+        mode: 0755
+
+    - name: Copy systemd service file for backend
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/backend.service
+        content: |
+          [Unit]
+          Description=Flask Backend App
+          After=network.target
+
+          [Service]
+          User=kulka
+          WorkingDirectory=/home/kulka/backend
+          ExecStart=/usr/bin/python3 /home/kulka/backend/app.py -p 5005
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: Reload systemd
+
+    - name: Enable and start backend service
+      ansible.builtin.systemd:
+        name: backend
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true

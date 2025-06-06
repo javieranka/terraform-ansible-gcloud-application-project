@@ -1,0 +1,69 @@
+---
+- name: Setup Frontend server for VamosCloudApp
+  hosts: frontend
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Python 3 and pip
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Install Flask and Requests via pip
+      pip:
+        name: 
+          - flask
+          - requests
+        state: present
+
+    - name: Ensure /home/kulka/frontend exists
+      file:
+        path: /home/kulka/frontend
+        state: directory
+        owner: kulka
+        group: kulka
+        mode: 0755
+
+    - name: Copy frontend app
+      copy:
+        src: /home/git/kulka/frontend/
+        dest: /home/kulka/frontend/
+        owner: kulka
+        group: kulka
+        mode: 0755
+
+    - name: Copy systemd service file for frontend
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/frontend.service
+        content: |
+          [Unit]
+          Description=Flask Frontend App
+          After=network.target
+
+          [Service]
+          User=kulka
+          WorkingDirectory=/home/kulka/frontend
+          ExecStart=/usr/bin/python3 /home/kulka/frontend/webserver.py -p 80
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: Reload systemd
+
+    - name: Enable and start frontend service
+      ansible.builtin.systemd:
+        name: frontend
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+

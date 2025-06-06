@@ -1,0 +1,73 @@
+---
+- name: Setup database server
+  hosts: db
+  become: yes
+  vars:
+    db_name: vamoscloud_db
+    db_user: vamosuser
+    db_password: supersecretpass
+    db_root_password: rootsecretpass 
+
+  tasks:
+    - name: Install MariaDB server and client
+      apt:
+        name:
+          - mariadb-server
+          - mariadb-client
+          - python3-pymysql
+        state: present
+        update_cache: yes
+
+    - name: Enable and start MariaDB service
+      systemd:
+        name: mariadb
+        enabled: yes
+        state: started
+
+    - name: Set root password and switch to mysql_native_password plugin
+      community.mysql.mysql_user:
+        name: root
+        host: localhost
+        password: "{{ db_root_password }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        plugin: mysql_native_password
+        state: present
+
+    - name: Ensure /root/.my.cnf exists with root credentials
+      copy:
+        dest: /root/.my.cnf
+        content: |
+          [client]
+          user=root
+          password={{ db_root_password }}
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Ensure MariaDB is listening on all interfaces
+      lineinfile:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+      notify: Restart MariaDB
+
+    - name: Create application database
+      mysql_db:
+        name: "{{ db_name }}"
+        state: present
+
+    - name: Create application user with privileges
+      mysql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        host: "%"
+        priv: "{{ db_name }}.*:ALL"
+        state: present
+        login_user: root
+        login_password: "{{ db_root_password }}"
+
+  handlers:
+    - name: Restart MariaDB
+      systemd:
+        name: mariadb
+        state: restarted

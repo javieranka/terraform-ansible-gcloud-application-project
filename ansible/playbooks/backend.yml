@@ -26,7 +26,7 @@
           - flask_sqlalchemy
         state: present
 
-    - name: Ensure /home/kulka/frontend exists
+    - name: Ensure /home/kulka/backend exists
       file:
         path: /home/kulka/backend/
         state: directory

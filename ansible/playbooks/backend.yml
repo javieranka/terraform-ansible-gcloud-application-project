@@ -26,21 +26,21 @@
           - flask_sqlalchemy
         state: present
 
-    - name: Ensure /home/kulka/backend exists
-      file:
-        path: /home/kulka/backend/
-        state: directory
-        owner: kulka
-        group: kulka
-        mode: 0755
+    # - name: Ensure /home/kulka/backend exists
+    #   file:
+    #     path: /home/kulka/backend/
+    #     state: directory
+    #     owner: kulka
+    #     group: kulka
+    #     mode: 0755
 
-    - name: Copy backend app
-      copy:
-        src: /home/git/kulka/backend/
-        dest: /home/kulka/backend/
-        owner: kulka
-        group: kulka
-        mode: 0755
+    # - name: Copy backend app
+    #   copy:
+    #     src: /home/git/kulka/backend/
+    #     dest: /home/kulka/backend/
+    #     owner: kulka
+    #     group: kulka
+    #     mode: 0755
 
     - name: Copy systemd service file for backend
       ansible.builtin.copy:

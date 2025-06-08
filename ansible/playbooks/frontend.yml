@@ -23,21 +23,21 @@
           - requests
         state: present
 
-    - name: Ensure /home/kulka/frontend exists
-      file:
-        path: /home/kulka/frontend
-        state: directory
-        owner: kulka
-        group: kulka
-        mode: 0755
+    # - name: Ensure /home/kulka/frontend exists
+    #   file:
+    #     path: /home/kulka/frontend
+    #     state: directory
+    #     owner: kulka
+    #     group: kulka
+    #     mode: 0755
 
-    - name: Copy frontend app
-      copy:
-        src: /home/git/kulka/frontend/
-        dest: /home/kulka/frontend/
-        owner: kulka
-        group: kulka
-        mode: 0755
+    # - name: Copy frontend app
+    #   copy:
+    #     src: /home/git/kulka/frontend/
+    #     dest: /home/kulka/frontend/
+    #     owner: kulka
+    #     group: kulka
+    #     mode: 0755
 
     - name: Copy systemd service file for frontend
       ansible.builtin.copy:

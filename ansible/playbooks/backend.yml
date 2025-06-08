@@ -36,7 +36,7 @@
 
     - name: Copy backend app
       copy:
-        src: /home/git/kulka/backend
+        src: /home/git/kulka/backend/
         dest: /home/kulka/backend/
         owner: kulka
         group: kulka

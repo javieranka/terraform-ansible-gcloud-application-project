@@ -25,7 +25,7 @@ variable "vm_tags" {
   type = map(list(string))
   default = {
     ansible  = ["allow-ssh"]
-    frontend = ["allow-http"]
+    frontend = ["allow-ssh", "allow-http"]
     backend  = ["allow-backend"]
     db       = ["allow-db"]
   }

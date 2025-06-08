@@ -1,3 +1,9 @@
+# Terraform state
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Specyficzne dla katalogu gcp-iac
+gcp-iac/.terraform/
 gcp-iac/.terraform.lock.hcl
-gcp-iac/terraform.tfstate
-gcp-iac/terraform.tfstate.backup
+gcp-iac/terraform.tfstate*

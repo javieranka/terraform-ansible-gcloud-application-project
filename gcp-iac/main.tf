@@ -127,7 +127,9 @@ resource "google_compute_instance" "vm" {
       content {}
     }
   }
-  tags = var.vm_names[count.index] == "frontend" || var.vm_names[count.index] == "ansible" ? ["allow-ssh"] : []
+
+  # tags = var.vm_names[count.index] == "frontend" || var.vm_names[count.index] == "ansible" ? ["allow-ssh"] : []
+  tags = lookup(var.vm_tags, var.vm_names[count.index], [])
 
   # metadata = var.vm_names[count.index] == "ansible" ? {
   #  startup-script = file("${path.module}/scripts/setup-ansible.sh")

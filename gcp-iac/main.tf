@@ -58,7 +58,7 @@ resource "google_compute_firewall" "allow_http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80"]
+    ports    = ["8080"]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -129,7 +129,11 @@ resource "google_compute_instance" "vm" {
   }
   tags = var.vm_names[count.index] == "frontend" || var.vm_names[count.index] == "ansible" ? ["allow-ssh"] : []
 
-  metadata = var.vm_names[count.index] == "ansible" ? {
-    startup-script = file("${path.module}/scripts/setup-ansible.sh")
+  # metadata = var.vm_names[count.index] == "ansible" ? {
+  #  startup-script = file("${path.module}/scripts/setup-ansible.sh")
+  # } : {}
+
+  metadata = var.vm_names[count.index] != "ansible" ? {
+    ssh-keys = "kulka:${file(var.ansible_ssh_key_pub_path)}"
   } : {}
 }

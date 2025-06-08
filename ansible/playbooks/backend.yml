@@ -2,6 +2,7 @@
 - name: Setup Backend server for VamosCloudAPI
   hosts: backend
   become: yes
+  gather_facts: no
 
   tasks:
     - name: Update apt cache
@@ -27,7 +28,7 @@
 
     - name: Ensure /home/kulka/frontend exists
       file:
-        path: /home/kulka/frontend
+        path: /home/kulka/backend/
         state: directory
         owner: kulka
         group: kulka

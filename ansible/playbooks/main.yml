@@ -1,45 +1,37 @@
 ---
-- name: Ensure /home/kulka/backend exists
-  file:
-    path: /home/git/kulka/backend
-    state: directory
-    owner: kulka
-    group: kulka
-    mode: 0755
-
-- name: Clone backend repo
-  git:
-    repo: "https://github.com/kayozelke/VamosCloudAPI.git"
-    dest: /home/git/kulka/backend
-    version: main
-    force: yes
-
-- name: Ensure /home/kulka/frontend exists
-  file:
-    path: /home/git/kulka/frontend
-    state: directory
-    owner: kulka
-    group: kulka
-    mode: 0755
-
-- name: Clone frontend repo
-  git:
-    repo: "https://github.com/kayozelke/VamosCloudApp.git"
-    dest: /home/git/kulka/frontend
-    version: main
-    force: yes
-
-- name: Install community.mysql collection
+- name: Setup Kulka environment
   hosts: localhost
-  gather_facts: false
+  become: true
   tasks:
-    - name: Install community.mysql collection
-      command:
-        argv:
-          - ansible-galaxy
-          - collection
-          - install
-          - community.mysql
+    - name: Ensure /home/kulka/backend exists
+      file:
+        path: /home/git/kulka/backend
+        state: directory
+        owner: kulka
+        group: kulka
+        mode: '0755'
+
+    - name: Clone backend repo
+      git:
+        repo: "https://github.com/kayozelke/VamosCloudAPI.git"
+        dest: /home/git/kulka/backend
+        version: main
+        force: yes
+
+    - name: Ensure /home/kulka/frontend exists
+      file:
+        path: /home/git/kulka/frontend
+        state: directory
+        owner: kulka
+        group: kulka
+        mode: '0755'
+
+    - name: Clone frontend repo
+      git:
+        repo: "https://github.com/kayozelke/VamosCloudApp.git"
+        dest: /home/git/kulka/frontend
+        version: main
+        force: yes
 
 - name: Provision DB server
   import_playbook: db.yml
